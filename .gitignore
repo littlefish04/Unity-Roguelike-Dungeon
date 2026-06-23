@@ -1,0 +1,38 @@
+# Unity generated
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+
+# IDE / Editor
+.idea/
+.vs/
+.vscode/
+*.csproj
+*.pidb
+*.unityproj
+*.sln.docstates
+
+# OS generated
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[Tt]humbs.db
+
+# Crashlytics
+CrashlyticsBuildLog.csv
+
+# Asset meta files should NOT be ignored
+# *.meta — DO NOT ignore .meta files! Unity needs them.
+
+# Local development (do not upload to GitHub)
+CLAUDE.md
+.claude/
