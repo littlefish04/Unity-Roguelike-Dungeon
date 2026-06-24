@@ -455,14 +455,17 @@ namespace DungeonShooter.Dungeon
                 }
             }
 
-            // 为每条连接生成 L 形走廊
+            // 为每条连接生成 L 形走廊（从房间边缘出发，而非中心）
             foreach (var (fromIdx, toIdx) in connections)
             {
-                var corridorTiles = CorridorGenerator.GenerateCorridor(
-                    rooms[fromIdx].Center,
-                    rooms[toIdx].Center,
-                    rng
-                );
+                Room roomA = rooms[fromIdx];
+                Room roomB = rooms[toIdx];
+
+                // 取对方中心在自己边缘上的最近点，走廊从边缘出发保留墙壁完整
+                Vector2Int start = GetClosestEdgePoint(roomA.InnerBounds, roomB.Center);
+                Vector2Int end = GetClosestEdgePoint(roomB.InnerBounds, roomA.Center);
+
+                var corridorTiles = CorridorGenerator.GenerateCorridor(start, end, rng);
 
                 foreach (var tile in corridorTiles)
                 {
@@ -549,6 +552,30 @@ namespace DungeonShooter.Dungeon
         #endregion
 
         #region 工具
+
+        /// <summary>
+        /// 找到矩形边缘上距离目标点最近的格子。
+        /// 用于让走廊从房间边缘出发，而不是从中心穿过墙壁。
+        /// </summary>
+        private static Vector2Int GetClosestEdgePoint(RectInt rect, Vector2Int target)
+        {
+            // 先把目标钳制到矩形内部
+            int cx = Mathf.Clamp(target.x, rect.xMin, rect.xMax - 1);
+            int cy = Mathf.Clamp(target.y, rect.yMin, rect.yMax - 1);
+
+            // 计算到四条边的距离
+            int distTop = rect.yMax - 1 - cy;
+            int distBottom = cy - rect.yMin;
+            int distLeft = cx - rect.xMin;
+            int distRight = rect.xMax - 1 - cx;
+
+            int minDist = Mathf.Min(distTop, distBottom, distLeft, distRight);
+
+            if (minDist == distTop)    return new Vector2Int(cx, rect.yMax - 1);
+            if (minDist == distBottom) return new Vector2Int(cx, rect.yMin);
+            if (minDist == distLeft)   return new Vector2Int(rect.xMin, cy);
+            return new Vector2Int(rect.xMax - 1, cy);
+        }
 
         private static readonly Vector2Int[] EightDirections =
         {
