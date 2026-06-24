@@ -90,32 +90,43 @@ namespace DungeonShooter.Dungeon
         /// <summary>
         /// 生成地牢。
         /// </summary>
-        /// <param name="seed">随机种子，-1 表示使用系统时间种子</param>
+        /// <param name="seed">随机种子，-1 表示自动换种重试</param>
         public void Generate(int seed = -1)
         {
-            if (seed < 0)
-                seed = Environment.TickCount;
+            const int maxRetries = 20;
 
-            rng = new System.Random(seed);
-            Log($"开始生成地牢，种子: {seed}");
-
-            Clear();
-            PlaceRooms();
-            SeparateRooms();
-            RemoveInvalidRooms();
-
-            if (rooms.Count == 0)
+            for (int attempt = 0; attempt < maxRetries; attempt++)
             {
-                Debug.LogError("[DungeonGenerator] 所有房间都被筛除了，请检查参数！");
+                int currentSeed = seed < 0 ? Environment.TickCount + attempt : seed;
+                rng = new System.Random(currentSeed);
+
+                Clear();
+                PlaceRooms();
+                SeparateRooms();
+                RemoveInvalidRooms();
+
+                if (rooms.Count == 0) continue;
+
+                AssignRoomTypes();
+                BuildConnections();
+                BuildCorridors();
+
+                // 检查是否有素材无法覆盖的墙壁（T字口/薄墙/孤立柱）
+                ComputeWallPositions();
+                if (HasProblematicWalls())
+                {
+                    Log($"种子 {currentSeed} 产生无法渲染的墙壁结构，重试 ({attempt + 1}/{maxRetries})");
+                    continue;
+                }
+
+                RenderToTilemap();
+                Log($"生成完成！种子 {currentSeed}，共 {rooms.Count} 个房间, {connections.Count} 条走廊");
                 return;
             }
 
-            AssignRoomTypes();
-            BuildConnections();
-            BuildCorridors();
+            // 所有重试都失败，强制渲染最后那次
+            Debug.LogWarning($"[DungeonGenerator] {maxRetries} 次重试均产生问题墙壁，使用最后一次结果");
             RenderToTilemap();
-
-            Log($"生成完成！共 {rooms.Count} 个房间, {connections.Count} 条走廊");
         }
 
         /// <summary>
@@ -525,20 +536,6 @@ namespace DungeonShooter.Dungeon
             floorTilemap.ClearAllTiles();
             wallTilemap.ClearAllTiles();
 
-            // 确定墙壁位置：地板格的八邻域中，非地板的格子就是墙壁
-            allWallPositions.Clear();
-            foreach (var floorPos in allFloorPositions)
-            {
-                foreach (var dir in EightDirections)
-                {
-                    Vector2Int neighbor = floorPos + dir;
-                    if (!allFloorPositions.Contains(neighbor))
-                    {
-                        allWallPositions.Add(neighbor);
-                    }
-                }
-            }
-
             // 地板：批量写入
             PaintTiles(floorTilemap, allFloorPositions, floorTile);
 
@@ -552,17 +549,59 @@ namespace DungeonShooter.Dungeon
         }
 
         /// <summary>
-        /// 根据墙壁格子四方向邻接地板的 4-bit 掩码选择墙壁 Tile。
-        /// 位定义：bit0=上 bit1=下 bit2=左 bit3=右（1 表示该方向有地板）。
+        /// 计算所有墙壁位置。必须在 BuildCorridors 之后、渲染之前调用。
         /// </summary>
-        private TileBase GetWallTile(Vector2Int pos)
+        private void ComputeWallPositions()
+        {
+            allWallPositions.Clear();
+            foreach (var floorPos in allFloorPositions)
+            {
+                foreach (var dir in EightDirections)
+                {
+                    Vector2Int neighbor = floorPos + dir;
+                    if (!allFloorPositions.Contains(neighbor))
+                    {
+                        allWallPositions.Add(neighbor);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 计算墙壁格子的 4-bit 邻接地板掩码。
+        /// bit0=上 bit1=下 bit2=左 bit3=右。
+        /// </summary>
+        private int GetWallMask(Vector2Int pos)
         {
             bool fUp    = allFloorPositions.Contains(pos + Vector2Int.up);
             bool fDown  = allFloorPositions.Contains(pos + Vector2Int.down);
             bool fLeft  = allFloorPositions.Contains(pos + Vector2Int.left);
             bool fRight = allFloorPositions.Contains(pos + Vector2Int.right);
+            return (fUp ? 1 : 0) | (fDown ? 2 : 0) | (fLeft ? 4 : 0) | (fRight ? 8 : 0);
+        }
 
-            int mask = (fUp ? 1 : 0) | (fDown ? 2 : 0) | (fLeft ? 4 : 0) | (fRight ? 8 : 0);
+        /// <summary>
+        /// 检查是否存在素材无法覆盖的墙壁结构（T字口/薄墙/孤立柱）。
+        /// </summary>
+        private bool HasProblematicWalls()
+        {
+            // 有问题的掩码：3(上下薄墙) 7/11/13/14(T字口) 12(左右薄墙) 15(孤立柱)
+            var badMasks = new HashSet<int> { 3, 7, 11, 12, 13, 14, 15 };
+            foreach (var pos in allWallPositions)
+            {
+                if (badMasks.Contains(GetWallMask(pos)))
+                    return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// 根据墙壁格子四方向邻接地板的 4-bit 掩码选择墙壁 Tile。
+        /// 位定义：bit0=上 bit1=下 bit2=左 bit3=右（1 表示该方向有地板）。
+        /// </summary>
+        private TileBase GetWallTile(Vector2Int pos)
+        {
+            int mask = GetWallMask(pos);
 
             switch (mask)
             {
