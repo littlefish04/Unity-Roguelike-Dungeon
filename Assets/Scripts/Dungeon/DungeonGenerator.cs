@@ -541,41 +541,55 @@ namespace DungeonShooter.Dungeon
         }
 
         /// <summary>
-        /// 根据墙壁格子周边地板位置选择对应墙壁 Tile。
-        /// 优先级：内拐角（2个邻接地板）> 直墙（1个邻接地板）> 外拐角（仅对角地板）> 回退。
+        /// 根据墙壁格子四方向邻接地板的 4-bit 掩码选择墙壁 Tile。
+        /// 位定义：bit0=上 bit1=下 bit2=左 bit3=右（1 表示该方向有地板）。
         /// </summary>
         private TileBase GetWallTile(Vector2Int pos)
         {
-            bool fDown  = allFloorPositions.Contains(pos + Vector2Int.down);
             bool fUp    = allFloorPositions.Contains(pos + Vector2Int.up);
+            bool fDown  = allFloorPositions.Contains(pos + Vector2Int.down);
             bool fLeft  = allFloorPositions.Contains(pos + Vector2Int.left);
             bool fRight = allFloorPositions.Contains(pos + Vector2Int.right);
 
-            // ① 内拐角 / T 字口：两个邻接方向有地板
-            if (fDown && fRight) return wallCornerTL ?? wallDefault;
-            if (fDown && fLeft)  return wallCornerTR ?? wallDefault;
-            if (fUp && fRight)   return wallCornerBL ?? wallDefault;
-            if (fUp && fLeft)    return wallCornerBR ?? wallDefault;
+            int mask = (fUp ? 1 : 0) | (fDown ? 2 : 0) | (fLeft ? 4 : 0) | (fRight ? 8 : 0);
 
-            // ② 直墙：单一邻接方向有地板
-            if (fDown)  return wallTop ?? wallDefault;
-            if (fUp)    return wallBottom ?? wallDefault;
-            if (fRight) return wallLeft ?? wallDefault;
-            if (fLeft)  return wallRight ?? wallDefault;
+            switch (mask)
+            {
+                // 单方向：直墙
+                case 1:  return wallBottom ?? wallDefault;  // 上
+                case 2:  return wallTop ?? wallDefault;     // 下
+                case 4:  return wallRight ?? wallDefault;   // 左
+                case 8:  return wallLeft ?? wallDefault;    // 右
 
-            // ③ 外拐角：没有邻接地板，但斜对角有地板
-            bool fDownRight = allFloorPositions.Contains(pos + new Vector2Int(1, -1));
-            bool fDownLeft  = allFloorPositions.Contains(pos + new Vector2Int(-1, -1));
-            bool fUpRight   = allFloorPositions.Contains(pos + new Vector2Int(1, 1));
-            bool fUpLeft    = allFloorPositions.Contains(pos + new Vector2Int(-1, 1));
+                // 相邻两方向：内拐角
+                case 3:  return wallDefault;  // 上+下（薄墙，极少见）
+                case 5:  return wallCornerBR ?? wallDefault; // 上+左
+                case 6:  return wallCornerTR ?? wallDefault; // 下+左
+                case 9:  return wallCornerBL ?? wallDefault; // 上+右
+                case 10: return wallCornerTL ?? wallDefault; // 下+右
+                case 12: return wallDefault;  // 左+右（薄墙，极少见）
 
-            if (fDownRight) return wallCornerTL ?? wallDefault;
-            if (fDownLeft)  return wallCornerTR ?? wallDefault;
-            if (fUpRight)   return wallCornerBL ?? wallDefault;
-            if (fUpLeft)    return wallCornerBR ?? wallDefault;
+                // 三方向：T 字口，取两个相邻方向的墙角
+                case 7:  return wallCornerTR ?? wallDefault; // 上+下+左 → 左下墙角
+                case 11: return wallCornerTL ?? wallDefault; // 上+下+右 → 右下墙角
+                case 13: return wallCornerBR ?? wallDefault; // 上+左+右 → 右上墙角
+                case 14: return wallCornerTR ?? wallDefault; // 下+左+右 → 左上墙角
 
-            // ④ 回退
-            return wallDefault;
+                // 四方向：孤立柱
+                case 15: return wallDefault;
+
+                // 无邻接地板：检查斜对角（外拐角）
+                default:
+                    if (allFloorPositions.Contains(pos + new Vector2Int(1, -1)))
+                        return wallCornerTL ?? wallDefault;
+                    if (allFloorPositions.Contains(pos + new Vector2Int(-1, -1)))
+                        return wallCornerTR ?? wallDefault;
+                    if (allFloorPositions.Contains(pos + new Vector2Int(1, 1)))
+                        return wallCornerBL ?? wallDefault;
+                    if (allFloorPositions.Contains(pos + new Vector2Int(-1, 1)))
+                        return wallCornerBR ?? wallDefault;
+                    return wallDefault;
+            }
         }
 
         /// <summary>
