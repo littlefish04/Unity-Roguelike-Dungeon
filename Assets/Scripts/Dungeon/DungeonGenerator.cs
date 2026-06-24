@@ -320,18 +320,26 @@ namespace DungeonShooter.Dungeon
                 Log($"Boss 房（回退）: #{sorted[0].index}");
             }
 
-            // 出生房：模板允许 Start 类型且最远离中心的房间
-            var startCandidate = sorted.LastOrDefault(x => IsAllowed(x.room, RoomType.Start));
-            if (startCandidate != default)
+            // 出生房：模板允许 Start 类型且离 Boss 房最远的房间
+            var bossRoom = rooms.FirstOrDefault(r => r.type == RoomType.Boss);
+            if (bossRoom != null)
             {
-                startCandidate.room.type = RoomType.Start;
-                Log($"出生房: #{startCandidate.index}");
-            }
-            else
-            {
-                var fallback = sorted.Last(x => x.room.type == RoomType.Normal);
-                fallback.room.type = RoomType.Start;
-                Log($"出生房（回退）: #{fallback.index}");
+                var startCandidate = sorted
+                    .Where(x => x.room.type == RoomType.Normal && IsAllowed(x.room, RoomType.Start))
+                    .OrderByDescending(x => Vector2Int.Distance(x.room.Center, bossRoom.Center))
+                    .FirstOrDefault();
+
+                if (startCandidate != default)
+                {
+                    startCandidate.room.type = RoomType.Start;
+                    Log($"出生房: #{startCandidate.index} (距Boss {Vector2Int.Distance(startCandidate.room.Center, bossRoom.Center):F0})");
+                }
+                else
+                {
+                    var fallback = sorted.Last(x => x.room.type == RoomType.Normal);
+                    fallback.room.type = RoomType.Start;
+                    Log($"出生房（回退）: #{fallback.index}");
+                }
             }
 
             // 宝箱房：从模板允许 Treasure 的 Normal 房间中随机选取
