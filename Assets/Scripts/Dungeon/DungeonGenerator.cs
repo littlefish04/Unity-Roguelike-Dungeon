@@ -38,14 +38,25 @@ namespace DungeonShooter.Dungeon
         public TileBase wallLeft;
         [Tooltip("右方墙壁：左方是地板")]
         public TileBase wallRight;
-        [Tooltip("左上墙角：下方+右方是地板")]
-        public TileBase wallCornerTL;
-        [Tooltip("右上墙角：下方+左方是地板")]
-        public TileBase wallCornerTR;
-        [Tooltip("左下墙角：上方+右方是地板")]
-        public TileBase wallCornerBL;
-        [Tooltip("右下墙角：上方+左方是地板")]
-        public TileBase wallCornerBR;
+        [Header("Tile 资源 - 墙壁内拐角（两个邻接地板）")]
+        [Tooltip("左上内拐角：下方+右方是地板")]
+        public TileBase wallInnerTL;
+        [Tooltip("右上内拐角：下方+左方是地板")]
+        public TileBase wallInnerTR;
+        [Tooltip("左下内拐角：上方+右方是地板")]
+        public TileBase wallInnerBL;
+        [Tooltip("右下内拐角：上方+左方是地板")]
+        public TileBase wallInnerBR;
+
+        [Header("Tile 资源 - 墙壁外拐角（仅斜对角有地板）")]
+        [Tooltip("左上外拐角：仅右下方有地板")]
+        public TileBase wallOuterTL;
+        [Tooltip("右上外拐角：仅左下方有地板")]
+        public TileBase wallOuterTR;
+        [Tooltip("左下外拐角：仅右上方有地板")]
+        public TileBase wallOuterBL;
+        [Tooltip("右下外拐角：仅左上方有地板")]
+        public TileBase wallOuterBR;
         [Tooltip("回退墙壁：方向判断不匹配时使用")]
         public TileBase wallDefault;
 
@@ -556,24 +567,24 @@ namespace DungeonShooter.Dungeon
             switch (mask)
             {
                 // 单方向：直墙
-                case 1:  return wallBottom ?? wallDefault;  // 上
-                case 2:  return wallTop ?? wallDefault;     // 下
-                case 4:  return wallRight ?? wallDefault;   // 左
-                case 8:  return wallLeft ?? wallDefault;    // 右
+                case 1:  return wallBottom ?? wallDefault;   // 上
+                case 2:  return wallTop ?? wallDefault;      // 下
+                case 4:  return wallRight ?? wallDefault;    // 左
+                case 8:  return wallLeft ?? wallDefault;     // 右
 
                 // 相邻两方向：内拐角
-                case 3:  return wallDefault;  // 上+下（薄墙，极少见）
-                case 5:  return wallCornerBR ?? wallDefault; // 上+左
-                case 6:  return wallCornerTR ?? wallDefault; // 下+左
-                case 9:  return wallCornerBL ?? wallDefault; // 上+右
-                case 10: return wallCornerTL ?? wallDefault; // 下+右
-                case 12: return wallDefault;  // 左+右（薄墙，极少见）
+                case 3:  return wallDefault;                 // 上+下（薄墙）
+                case 5:  return wallInnerBR ?? wallDefault;  // 上+左
+                case 6:  return wallInnerTR ?? wallDefault;  // 下+左
+                case 9:  return wallInnerBL ?? wallDefault;  // 上+右
+                case 10: return wallInnerTL ?? wallDefault;  // 下+右
+                case 12: return wallDefault;                 // 左+右（薄墙）
 
-                // 三方向：T 字口，取两个相邻方向的墙角
-                case 7:  return wallCornerTR ?? wallDefault; // 上+下+左 → 左下墙角
-                case 11: return wallCornerTL ?? wallDefault; // 上+下+右 → 右下墙角
-                case 13: return wallCornerBR ?? wallDefault; // 上+左+右 → 右上墙角
-                case 14: return wallCornerTR ?? wallDefault; // 下+左+右 → 左上墙角
+                // 三方向：T 字口，退回到内拐角
+                case 7:  return wallInnerTR ?? wallDefault;
+                case 11: return wallInnerTL ?? wallDefault;
+                case 13: return wallInnerBR ?? wallDefault;
+                case 14: return wallInnerTR ?? wallDefault;
 
                 // 四方向：孤立柱
                 case 15: return wallDefault;
@@ -581,13 +592,13 @@ namespace DungeonShooter.Dungeon
                 // 无邻接地板：检查斜对角（外拐角）
                 default:
                     if (allFloorPositions.Contains(pos + new Vector2Int(1, -1)))
-                        return wallCornerTL ?? wallDefault;
+                        return wallOuterTL ?? wallDefault;
                     if (allFloorPositions.Contains(pos + new Vector2Int(-1, -1)))
-                        return wallCornerTR ?? wallDefault;
+                        return wallOuterTR ?? wallDefault;
                     if (allFloorPositions.Contains(pos + new Vector2Int(1, 1)))
-                        return wallCornerBL ?? wallDefault;
+                        return wallOuterBL ?? wallDefault;
                     if (allFloorPositions.Contains(pos + new Vector2Int(-1, 1)))
-                        return wallCornerBR ?? wallDefault;
+                        return wallOuterBR ?? wallDefault;
                     return wallDefault;
             }
         }
