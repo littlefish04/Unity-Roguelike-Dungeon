@@ -259,17 +259,16 @@ namespace DungeonShooter.Dungeon
                     return true;
                 }
 
-                // 过度重叠的移除（与其他房间重叠面积 > 自身 50%）
-                int roomArea = room.size.x * room.size.y;
+                // 有任何重叠（含1格间距）就移除
                 foreach (var other in rooms)
                 {
                     if (other == room) continue;
-                    if (!room.Overlaps(other, padding: 0)) continue;
+                    if (!room.Overlaps(other, padding: 1)) continue;
 
                     RectInt overlap = GetOverlap(room.Bounds, other.Bounds);
-                    if (overlap.width * overlap.height > roomArea * 0.5f)
+                    if (overlap.width * overlap.height > 0)
                     {
-                        Log($"移除房间 ({room.position.x},{room.position.y}): 过度重叠");
+                        Log($"移除房间 ({room.position.x},{room.position.y}): 与其他房间重叠");
                         return true;
                     }
                 }
