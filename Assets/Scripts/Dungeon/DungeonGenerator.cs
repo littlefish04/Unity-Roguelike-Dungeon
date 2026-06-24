@@ -498,7 +498,7 @@ namespace DungeonShooter.Dungeon
             allWallPositions.Clear();
             foreach (var floorPos in allFloorPositions)
             {
-                foreach (var dir in FourDirections)
+                foreach (var dir in EightDirections)
                 {
                     Vector2Int neighbor = floorPos + dir;
                     if (!allFloorPositions.Contains(neighbor))
@@ -551,10 +551,11 @@ namespace DungeonShooter.Dungeon
 
         #region 工具
 
-        private static readonly Vector2Int[] FourDirections =
+        private static readonly Vector2Int[] EightDirections =
         {
-            Vector2Int.up, Vector2Int.down,
-            Vector2Int.left, Vector2Int.right,
+            Vector2Int.up, Vector2Int.down, Vector2Int.left, Vector2Int.right,
+            new Vector2Int(1, 1), new Vector2Int(1, -1),     // 右上、右下
+            new Vector2Int(-1, 1), new Vector2Int(-1, -1),   // 左上、左下
         };
 
         private void Log(string message)
