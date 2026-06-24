@@ -29,6 +29,12 @@ namespace DungeonShooter.Dungeon
         /// <summary>房间矩形范围（只读计算属性）</summary>
         public RectInt Bounds => new RectInt(position, size);
 
+        /// <summary>房间内部范围，四边各缩进 1 格（用于走廊连接点，保留墙壁空间）</summary>
+        public RectInt InnerBounds => new RectInt(
+            position.x + 1, position.y + 1,
+            size.x - 2, size.y - 2
+        );
+
         public Room(Vector2Int position, Vector2Int size, RoomTemplate template = null)
         {
             this.position = position;
