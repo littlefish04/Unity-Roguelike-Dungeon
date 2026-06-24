@@ -307,29 +307,59 @@ namespace DungeonShooter.Dungeon
                 .OrderBy(x => x.dist)
                 .ToList();
 
-            // Boss 房：最靠近中心 → 玩家需要穿越地牢才能到达
-            sorted[0].room.type = RoomType.Boss;
-            Log($"Boss 房: #{sorted[0].index} (距中心 {sorted[0].dist:F0})");
+            // Boss 房：模板允许 Boss 类型且最靠近中心的房间
+            var bossCandidate = sorted.FirstOrDefault(x => IsAllowed(x.room, RoomType.Boss));
+            if (bossCandidate != default)
+            {
+                bossCandidate.room.type = RoomType.Boss;
+                Log($"Boss 房: #{bossCandidate.index} (距中心 {bossCandidate.dist:F0})");
+            }
+            else
+            {
+                sorted[0].room.type = RoomType.Boss;
+                Log($"Boss 房（回退）: #{sorted[0].index}");
+            }
 
-            // 出生房：离中心最远 → 玩家从边缘开始
-            sorted[sorted.Count - 1].room.type = RoomType.Start;
-            Log($"出生房: #{sorted[sorted.Count - 1].index}");
+            // 出生房：模板允许 Start 类型且最远离中心的房间
+            var startCandidate = sorted.LastOrDefault(x => IsAllowed(x.room, RoomType.Start));
+            if (startCandidate != default)
+            {
+                startCandidate.room.type = RoomType.Start;
+                Log($"出生房: #{startCandidate.index}");
+            }
+            else
+            {
+                var fallback = sorted.Last(x => x.room.type == RoomType.Normal);
+                fallback.room.type = RoomType.Start;
+                Log($"出生房（回退）: #{fallback.index}");
+            }
 
-            // 宝箱房：从剩余 Normal 房间中随机选取
+            // 宝箱房：从模板允许 Treasure 的 Normal 房间中随机选取
             int treasureCount = dungeonData.TreasureRoomCount(rooms.Count);
-            var candidates = sorted
-                .Where(x => x.room.type == RoomType.Normal)
+            var treasureCandidates = sorted
+                .Where(x => x.room.type == RoomType.Normal && IsAllowed(x.room, RoomType.Treasure))
                 .OrderBy(x => rng.Next())
                 .Take(treasureCount);
 
-            foreach (var item in candidates)
+            foreach (var item in treasureCandidates)
             {
                 item.room.type = RoomType.Treasure;
                 Log($"宝箱房: #{item.index}");
             }
 
-            // 其余保持 Normal
             Log("房间类型分配完成");
+        }
+
+        /// <summary>
+        /// 检查房间的模板是否允许指定的房间类型。
+        /// 如果模板没有配置 allowedTypes，默认允许所有类型。
+        /// </summary>
+        private bool IsAllowed(Room room, RoomType type)
+        {
+            if (room.template == null) return true;
+            if (room.template.allowedTypes == null || room.template.allowedTypes.Count == 0)
+                return true;
+            return room.template.allowedTypes.Contains(type);
         }
 
         #endregion
