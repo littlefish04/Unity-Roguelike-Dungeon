@@ -25,11 +25,29 @@ namespace DungeonShooter.Dungeon
         [Tooltip("墙壁层 Tilemap")]
         public Tilemap wallTilemap;
 
-        [Header("Tile 资源")]
-        [Tooltip("地板 Tile（拖入你的地板 Tile 资产）")]
+        [Header("Tile 资源 - 地板")]
+        [Tooltip("地板 Tile")]
         public TileBase floorTile;
-        [Tooltip("墙壁 Tile（拖入你的墙壁 Tile 资产）")]
-        public TileBase wallTile;
+
+        [Header("Tile 资源 - 墙壁（根据邻居地板方向自动选片）")]
+        [Tooltip("上方墙壁：下方是地板")]
+        public TileBase wallTop;
+        [Tooltip("下方墙壁：上方是地板")]
+        public TileBase wallBottom;
+        [Tooltip("左方墙壁：右方是地板")]
+        public TileBase wallLeft;
+        [Tooltip("右方墙壁：左方是地板")]
+        public TileBase wallRight;
+        [Tooltip("左上墙角：下方+右方是地板")]
+        public TileBase wallCornerTL;
+        [Tooltip("右上墙角：下方+左方是地板")]
+        public TileBase wallCornerTR;
+        [Tooltip("左下墙角：上方+右方是地板")]
+        public TileBase wallCornerBL;
+        [Tooltip("右下墙角：上方+左方是地板")]
+        public TileBase wallCornerBR;
+        [Tooltip("回退墙壁：方向判断不匹配时使用")]
+        public TileBase wallDefault;
 
         [Header("调试")]
         [Tooltip("启用后每次生成输出详细日志")]
@@ -487,16 +505,16 @@ namespace DungeonShooter.Dungeon
                 Debug.LogError("[DungeonGenerator] Tilemap 引用未赋值！");
                 return;
             }
-            if (floorTile == null || wallTile == null)
+            if (floorTile == null || wallDefault == null)
             {
-                Debug.LogError("[DungeonGenerator] Tile 资源未赋值！");
+                Debug.LogError("[DungeonGenerator] 地板 Tile 或回退墙壁 Tile 未赋值！");
                 return;
             }
 
             floorTilemap.ClearAllTiles();
             wallTilemap.ClearAllTiles();
 
-            // 确定墙壁位置：地板格的四邻域中，非地板的格子就是墙壁
+            // 确定墙壁位置：地板格的八邻域中，非地板的格子就是墙壁
             allWallPositions.Clear();
             foreach (var floorPos in allFloorPositions)
             {
@@ -510,11 +528,43 @@ namespace DungeonShooter.Dungeon
                 }
             }
 
-            // 批量写入 Tilemap
+            // 地板：批量写入
             PaintTiles(floorTilemap, allFloorPositions, floorTile);
-            PaintTiles(wallTilemap, allWallPositions, wallTile);
+
+            // 墙壁：逐格根据邻居地板方向选 Tile
+            foreach (var pos in allWallPositions)
+            {
+                wallTilemap.SetTile(new Vector3Int(pos.x, pos.y, 0), GetWallTile(pos));
+            }
 
             Log($"渲染: {allFloorPositions.Count} 地板, {allWallPositions.Count} 墙壁");
+        }
+
+        /// <summary>
+        /// 根据墙壁格子四邻域中地板的位置，选择对应的墙壁 Tile。
+        /// 优先级：墙角（两个地板邻居） > 直墙（一个地板邻居） > 回退。
+        /// </summary>
+        private TileBase GetWallTile(Vector2Int pos)
+        {
+            bool floorDown  = allFloorPositions.Contains(pos + Vector2Int.down);
+            bool floorUp    = allFloorPositions.Contains(pos + Vector2Int.up);
+            bool floorLeft  = allFloorPositions.Contains(pos + Vector2Int.left);
+            bool floorRight = allFloorPositions.Contains(pos + Vector2Int.right);
+
+            // 墙角（两个方向有地板）
+            if (floorDown && floorRight) return wallCornerTL ?? wallDefault;
+            if (floorDown && floorLeft)  return wallCornerTR ?? wallDefault;
+            if (floorUp && floorRight)   return wallCornerBL ?? wallDefault;
+            if (floorUp && floorLeft)    return wallCornerBR ?? wallDefault;
+
+            // 直墙（单一方向有地板）
+            if (floorDown)  return wallTop ?? wallDefault;
+            if (floorUp)    return wallBottom ?? wallDefault;
+            if (floorRight) return wallLeft ?? wallDefault;
+            if (floorLeft)  return wallRight ?? wallDefault;
+
+            // 回退
+            return wallDefault;
         }
 
         /// <summary>
