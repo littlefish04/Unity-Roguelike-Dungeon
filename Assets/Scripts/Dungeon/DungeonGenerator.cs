@@ -46,14 +46,6 @@ namespace DungeonShooter.Dungeon
         public TileBase wallCornerBL;
         [Tooltip("右下墙角：上方+左方是地板")]
         public TileBase wallCornerBR;
-        [Tooltip("T字口上：上方向无地板（下+左+右有地板）")]
-        public TileBase wallTUp;
-        [Tooltip("T字口下：下方向无地板（上+左+右有地板）")]
-        public TileBase wallTDown;
-        [Tooltip("T字口左：左方向无地板（上+下+右有地板）")]
-        public TileBase wallTLeft;
-        [Tooltip("T字口右：右方向无地板（上+下+左有地板）")]
-        public TileBase wallTRight;
         [Tooltip("回退墙壁：方向判断不匹配时使用")]
         public TileBase wallDefault;
 
@@ -577,11 +569,11 @@ namespace DungeonShooter.Dungeon
                 case 10: return wallCornerTL ?? wallDefault; // 下+右
                 case 12: return wallDefault;  // 左+右（薄墙，极少见）
 
-                // 三方向：T 字口（缺哪个方向，墙壁就往哪边凸出）
-                case 7:  return wallTRight ?? wallDefault; // 缺右（上+下+左）
-                case 11: return wallTLeft ?? wallDefault;  // 缺左（上+下+右）
-                case 13: return wallTDown ?? wallDefault;  // 缺下（上+左+右）
-                case 14: return wallTUp ?? wallDefault;    // 缺上（下+左+右）
+                // 三方向：T 字口，取两个相邻方向的墙角
+                case 7:  return wallCornerTR ?? wallDefault; // 上+下+左 → 左下墙角
+                case 11: return wallCornerTL ?? wallDefault; // 上+下+右 → 右下墙角
+                case 13: return wallCornerBR ?? wallDefault; // 上+左+右 → 右上墙角
+                case 14: return wallCornerTR ?? wallDefault; // 下+左+右 → 左上墙角
 
                 // 四方向：孤立柱
                 case 15: return wallDefault;
