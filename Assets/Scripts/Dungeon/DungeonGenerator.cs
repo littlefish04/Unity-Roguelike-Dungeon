@@ -342,11 +342,11 @@ namespace DungeonShooter.Dungeon
                 }
             }
 
-            // 宝箱房：从模板允许 Treasure 的 Normal 房间中随机选取
+            // 宝箱房：优先选小房间，从模板允许 Treasure 的 Normal 房间中按面积升序选取
             int treasureCount = dungeonData.TreasureRoomCount(rooms.Count);
             var treasureCandidates = sorted
                 .Where(x => x.room.type == RoomType.Normal && IsAllowed(x.room, RoomType.Treasure))
-                .OrderBy(x => rng.Next())
+                .OrderBy(x => x.room.size.x * x.room.size.y)
                 .Take(treasureCount);
 
             foreach (var item in treasureCandidates)
