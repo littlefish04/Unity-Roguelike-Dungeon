@@ -509,6 +509,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2004811684}
+  - component: {fileID: 2004811685}
   m_Layer: 0
   m_Name: DungeonGenerator
   m_TagString: Untagged
@@ -531,6 +532,24 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2004811685
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2004811683}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba542973ef86814d9ddcf061b766ce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dungeonData: {fileID: 11400000, guid: f02af142c2419734ca9cf8440e5807b4, type: 2}
+  floorTilemap: {fileID: 402200708}
+  wallTilemap: {fileID: 1491073538}
+  floorTile: {fileID: 11400000, guid: 494675cc8e909484f87223cb76906d37, type: 2}
+  wallTile: {fileID: 11400000, guid: 6dffa8569eabb414dad69db232559e01, type: 2}
+  verboseLogging: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

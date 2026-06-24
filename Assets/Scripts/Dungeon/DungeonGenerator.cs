@@ -50,10 +50,18 @@ namespace DungeonShooter.Dungeon
         #region 公共入口
 
         /// <summary>
+        /// 生成地牢（右键菜单入口，使用随机种子）。
+        /// </summary>
+        [ContextMenu("Generate Dungeon")]
+        public void GenerateDungeon()
+        {
+            Generate(-1);
+        }
+
+        /// <summary>
         /// 生成地牢。
         /// </summary>
         /// <param name="seed">随机种子，-1 表示使用系统时间种子</param>
-        [ContextMenu("Generate Dungeon")]
         public void Generate(int seed = -1)
         {
             if (seed < 0)
