@@ -19,4 +19,4 @@ MonoBehaviour:
   previousWidth: 5
   previousHeight: 5
   allowedTypes: 0300000001000000
-  weight: 2
+  weight: 0.5

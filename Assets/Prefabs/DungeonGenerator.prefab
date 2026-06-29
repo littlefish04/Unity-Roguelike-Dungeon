@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1653373256577197850
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6866465775710373540}
+  - component: {fileID: 3909420444377529867}
+  m_Layer: 0
+  m_Name: DungeonGenerator
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6866465775710373540
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653373256577197850}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3909420444377529867
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1653373256577197850}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ba542973ef86814d9ddcf061b766ce8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  dungeonData: {fileID: 11400000, guid: f02af142c2419734ca9cf8440e5807b4, type: 2}
+  floorTilemap: {fileID: 0}
+  wallTilemap: {fileID: 0}
+  floorTile: {fileID: 11400000, guid: 494675cc8e909484f87223cb76906d37, type: 2}
+  wallTop: {fileID: 11400000, guid: 6621e54d448fe6644a3f8d93124544a4, type: 2}
+  wallBottom: {fileID: 11400000, guid: f9d79be1d901d004caec6fea614f48ea, type: 2}
+  wallLeft: {fileID: 11400000, guid: e2854ec2d117d3a4e8db0d18f9c1a2a7, type: 2}
+  wallRight: {fileID: 11400000, guid: d042b857efcc926459095ddadb10a45f, type: 2}
+  wallInnerTL: {fileID: 11400000, guid: c84bebc42743aff4c97befa7952150b3, type: 2}
+  wallInnerTR: {fileID: 11400000, guid: 6621e54d448fe6644a3f8d93124544a4, type: 2}
+  wallInnerBL: {fileID: 11400000, guid: 0a4230f4ff3345442aeca3017f4ada10, type: 2}
+  wallInnerBR: {fileID: 11400000, guid: e5ce4838ba0edaf448c70cd6e477e09b, type: 2}
+  wallOuterTL: {fileID: 11400000, guid: e8403a60181161f45b912a6cb8547013, type: 2}
+  wallOuterTR: {fileID: 11400000, guid: 9672d1822149a1e49b53180638113a89, type: 2}
+  wallOuterBL: {fileID: 11400000, guid: 8ba8805bd1998164fbb33a40d2f78592, type: 2}
+  wallOuterBR: {fileID: 11400000, guid: bf508dd6b808487498b82f4cee132ea7, type: 2}
+  wallDefault: {fileID: 11400000, guid: c84bebc42743aff4c97befa7952150b3, type: 2}
+  verboseLogging: 1

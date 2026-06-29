@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07b83ddd653fa1a4da79931efd9582bf, type: 3}
   m_Name: DungeonData
   m_EditorClassIdentifier: 
-  dungeonWidth: 200
-  dungeonHeight: 150
-  roomCount: 24
+  dungeonWidth: 100
+  dungeonHeight: 75
+  roomCount: 20
   roomTemplates:
   - {fileID: 11400000, guid: 293a6d9479078ec478c7b901c6776fbb, type: 2}
   - {fileID: 11400000, guid: bd97256920149954fa2c0eb1f7678291, type: 2}
   - {fileID: 11400000, guid: b0ddcdde31e9ba44696035282c5c5a7d, type: 2}
   - {fileID: 11400000, guid: f4dd6d985b043c744b4d7a85fafbcf04, type: 2}
   separationIterations: 15
-  extraEdgeChance: 0.3
-  treasureRoomRatio: 0.15
+  extraEdgeChance: 0.02
+  treasureRoomRatio: 0.25
