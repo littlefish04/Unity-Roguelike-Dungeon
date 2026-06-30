@@ -15142,7 +15142,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   followSpeed: 7
-  centerLockSpeed: 2
   drawDebugBounds: 0
 --- !u!114 &943940888 stripped
 MonoBehaviour:

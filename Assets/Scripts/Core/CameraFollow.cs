@@ -23,10 +23,6 @@ namespace DungeonShooter
         [Range(0.1f, 20f)]
         [SerializeField] private float followSpeed = 5f;
 
-        [Tooltip("过渡到小房间中心的速度（秒数），值越大越慢到达")]
-        [Range(0.5f, 3f)]
-        [SerializeField] private float centerLockSpeed = 1.5f;
-
         [Header("调试")]
         [Tooltip("在 Scene 视图中绘制房间 clamp 边界")]
         [SerializeField] private bool drawDebugBounds = false;
@@ -179,6 +175,7 @@ namespace DungeonShooter
 #if UNITY_EDITOR
         private void OnDrawGizmosSelected()
         {
+            if (!drawDebugBounds) return;
             if (cam == null) cam = GetComponent<Camera>();
             if (cam == null) return;
             if (rooms == null) return;

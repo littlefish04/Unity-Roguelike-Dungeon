@@ -28,6 +28,7 @@ namespace DungeonShooter.Player
         private Rigidbody2D rb;
         private SpriteRenderer spriteRenderer;
         private Animator animator;
+        private AfterimageEffect afterimageEffect;
 
         #endregion
 
@@ -70,6 +71,7 @@ namespace DungeonShooter.Player
             rb = GetComponent<Rigidbody2D>();
             spriteRenderer = GetComponent<SpriteRenderer>();
             animator = GetComponent<Animator>();
+            afterimageEffect = GetComponentInChildren<AfterimageEffect>();
 
             // 设置刚体参数：无重力、小阻尼停稳更平滑、插值消除抖动
             if (rb != null)
@@ -246,6 +248,10 @@ namespace DungeonShooter.Player
             isInvincible = true;
             canDash = false;
 
+            // 开始产出残影
+            if (afterimageEffect != null)
+                afterimageEffect.StartSpawning();
+
             float timer = 0f;
             while (timer < data.dashDuration)
             {
@@ -255,6 +261,11 @@ namespace DungeonShooter.Player
             }
 
             isDashing = false;
+            rb.velocity = moveInput * data.moveSpeed;
+
+            // 停止产出残影
+            if (afterimageEffect != null)
+                afterimageEffect.StopSpawning();
 
             // ---- 阶段 2：无敌延续（防止冲刺结束瞬间中招）----
             yield return new WaitForSeconds(data.invincibilityPadding);
