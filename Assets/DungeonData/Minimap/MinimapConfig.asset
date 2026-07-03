@@ -12,21 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 062a2bef93e388a4f89d931893d964ce, type: 3}
   m_Name: MinimapConfig
   m_EditorClassIdentifier: 
-  textureWidth: 800
-  textureHeight: 500
+  textureWidth: 400
+  textureHeight: 250
   unexploredColor: {r: 0.05, g: 0.05, b: 0.08, a: 1}
-  corridorColor: {r: 0.41252956, g: 0.25640798, b: 0.6320754, a: 1}
-  normalRoomColor: {r: 0.55415815, g: 0.3033108, b: 0.9056604, a: 1}
+  corridorColor: {r: 0.46954906, g: 0.27596563, b: 0.740566, a: 1}
+  normalRoomColor: {r: 0.62772876, g: 0.37088376, b: 0.995283, a: 1}
   bossRoomColor: {r: 0.82, g: 0.18, b: 0.18, a: 1}
   startRoomColor: {r: 0.18, g: 0.72, b: 0.28, a: 1}
   treasureRoomColor: {r: 0.88, g: 0.78, b: 0.15, a: 1}
-  visionRadius: 3
+  visionRadius: 5
   fogUpdateInterval: 0.1
   playerDotColor: {r: 1, g: 1, b: 1, a: 1}
-  playerDotRadius: 5
+  playerDotRadius: 10
   blinkInterval: 0.3
   toggleKey: 109
   zoomKey: 9
-  panSpeed: 200
-  viewportPadding: 40
+  panSpeed: 700
+  viewportPadding: 5
   backgroundAlpha: 0.85
