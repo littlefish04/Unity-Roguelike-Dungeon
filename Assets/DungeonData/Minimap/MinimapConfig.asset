@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 062a2bef93e388a4f89d931893d964ce, type: 3}
+  m_Name: MinimapConfig
+  m_EditorClassIdentifier: 
+  textureWidth: 800
+  textureHeight: 500
+  unexploredColor: {r: 0.05, g: 0.05, b: 0.08, a: 1}
+  corridorColor: {r: 0.41252956, g: 0.25640798, b: 0.6320754, a: 1}
+  normalRoomColor: {r: 0.55415815, g: 0.3033108, b: 0.9056604, a: 1}
+  bossRoomColor: {r: 0.82, g: 0.18, b: 0.18, a: 1}
+  startRoomColor: {r: 0.18, g: 0.72, b: 0.28, a: 1}
+  treasureRoomColor: {r: 0.88, g: 0.78, b: 0.15, a: 1}
+  visionRadius: 3
+  fogUpdateInterval: 0.1
+  playerDotColor: {r: 1, g: 1, b: 1, a: 1}
+  playerDotRadius: 5
+  blinkInterval: 0.3
+  toggleKey: 109
+  zoomKey: 9
+  panSpeed: 200
+  viewportPadding: 40
+  backgroundAlpha: 0.85

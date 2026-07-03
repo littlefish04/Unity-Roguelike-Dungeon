@@ -1,6 +1,7 @@
 using System.Linq;
 using DungeonShooter.Dungeon;
 using DungeonShooter.Player;
+using DungeonShooter.UI;
 using UnityEngine;
 
 namespace DungeonShooter
@@ -33,6 +34,10 @@ namespace DungeonShooter
         [Header("摄像机")]
         [Tooltip("摄像机跟随组件引用")]
         [SerializeField] private CameraFollow cameraFollow;
+
+        [Header("小地图")]
+        [Tooltip("小地图配置（ScriptableObject）")]
+        [SerializeField] private MinimapConfig minimapConfig;
 
         private void Awake()
         {
@@ -96,6 +101,13 @@ namespace DungeonShooter
             // 第 4 步：设置摄像机跟随目标
             cameraFollow.SetTarget(player.transform);
             cameraFollow.SetRooms(dungeonGenerator.Rooms);
+
+            // 第 5 步：初始化小地图系统
+            if (minimapConfig != null)
+            {
+                var minimap = gameObject.AddComponent<MinimapController>();
+                minimap.Initialize(minimapConfig);
+            }
 
             Debug.Log($"[GameManager] 游戏初始化完成！玩家出生在 {startRoom.Center}");
         }

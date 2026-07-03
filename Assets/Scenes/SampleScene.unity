@@ -25851,6 +25851,7 @@ MonoBehaviour:
   dungeonGenerator: {fileID: 943940888}
   playerPrefab: {fileID: 4206903505456802003, guid: df8e0484266de7240b594852443e71f5, type: 3}
   cameraFollow: {fileID: 519420033}
+  minimapConfig: {fileID: 11400000, guid: c0931395315d0104a85119ba7dd7895f, type: 2}
 --- !u!4 &1702863047
 Transform:
   m_ObjectHideFlags: 0
